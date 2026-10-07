@@ -1,0 +1,27 @@
+name: Daily Hackathon Sync
+
+on:
+  schedule:
+    # Runs automatically every day at 8:00 AM IST (2:30 AM UTC)
+    - cron: '30 2 * * *'
+  workflow_dispatch: # Allows manual trigger anytime
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install requests firebase-admin
+
+      - name: Run Crawler & Update Database
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/sync_hackathons.py
