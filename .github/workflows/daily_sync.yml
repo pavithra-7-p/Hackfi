@@ -1,0 +1,27 @@
+name: Autonomous Daily Hackathon Ingestion
+
+on:
+  schedule:
+    # Runs automatically every midnight at 00:00 IST (18:30 UTC)
+    - cron: '30 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install firebase-admin axios
+
+      - name: Execute Daily Sync
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/sync_hackathons.js
